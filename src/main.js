@@ -76,9 +76,24 @@ app.innerHTML = `
         height:100%;
         display:none;
       ">
-      <h2>...</h2>
-      </div>
+      <h3>O poema dedicado a Victor</h3>
+      <p>
+        Gosto do teu sorriso
+        porque ele me deixa à vontade.
 
+        Conversar com você me faz bem,
+        me acalma,
+        me faz querer ficar um pouco mais.
+
+        Não digo tudo de uma vez,
+        não por falta de vontade,
+        mas porque respeito o tempo das coisas.
+
+        Talvez eu queira ser mais do que palavras trocadas,
+        talvez eu já queira,
+        mas espero o momento certo...
+      </p>
+      </div>
     </div>
   </div>
 `;
