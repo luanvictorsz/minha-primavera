@@ -28,13 +28,13 @@ const frases = [
   "Caminhando pelo Ibirapuera.",
   "criando bichinhos de massinha no Ibirapuera.",
   "minha primavera...",
+  "TAPA NA BUNDAAAAA"
 ];
 
 const app = document.querySelector("#app");
 
 app.innerHTML = `
   <div style="height:100vh; display:flex; flex-direction:column;">
-    
     <!-- Tabs -->
     <div style="
       display:flex;
