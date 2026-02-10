@@ -103,7 +103,6 @@ app.innerHTML = `
           height="300"
           class="momo-balanceando"
         />
-
         <p></p>
       </div>
     </div>
