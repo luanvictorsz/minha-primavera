@@ -2,10 +2,17 @@ import './style.css'
 import momo from '../img/Momo.png'
 
 const frases = [
+  'Você parece referência de artista.',
+  'Apaixonada por vitamina de banana.',
+  'Raviel tá impossivel hoje.',
+  'Misa, o Victor tá muito apaixonado por você.',
+  'Misa, o Victor te ama muito.',
+  'Misa, sente meu cheirinho... ele passou o perfume dele em mim',
+  
+  'a Misa tem um sorriso tão lindo, né?',
   'O Raviel aprontando de novo.',
   'O Raviel dormindo todo torto.',
   'O Raviel achando que manda na casa.',
-  'O Raviel pedindo carinho do nada.',
 
   'O sorriso dela ilumina tudo.',
   'Os olhinhos dela dizem mais que palavras.',
