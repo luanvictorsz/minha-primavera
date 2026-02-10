@@ -1,5 +1,6 @@
 import "./style.css";
 import momo from "../img/Momo.png";
+import momoPhoto from "../img/momoPhoto.jpeg";
 
 const frases = [
   "Você parece referência de artista.",
@@ -93,6 +94,17 @@ app.innerHTML = `
         talvez eu já queira,
         mas espero o momento certo...
       </p>
+
+      <h3>O momo</h3>
+       <img
+          src="${momoPhoto}"
+          alt="Momo"
+          width="300"
+          height="300"
+          class="momo-balanceando"
+        />
+
+        <p></p>
       </div>
     </div>
   </div>
