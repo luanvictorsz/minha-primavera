@@ -113,3 +113,31 @@ button:focus-visible {
   transform-origin: center top;
 }
 
+/* style.css (adicione no final) */
+
+.heart-img {
+  position: absolute;
+  transform: translate(-50%, 0);
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.25));
+  animation: subir-heart var(--dur, 1.8s) ease-out forwards;
+}
+
+@keyframes subir-heart {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.95) rotate(-2deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(calc(-50% + var(--drift, 0px)), -160px) scale(1) rotate(2deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% - var(--drift, 0px)), -320px) scale(1.05) rotate(-2deg);
+  }
+}

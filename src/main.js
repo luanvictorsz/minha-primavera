@@ -1,5 +1,7 @@
+// main.js (corrigido)
 import "./style.css";
 import momo from "../img/Momo.png";
+import heart from "../img/heart.png";
 import momoPhoto from "../img/momoPhoto.jpeg";
 
 const frases = [
@@ -28,14 +30,13 @@ const frases = [
   "Caminhando pelo Ibirapuera.",
   "criando bichinhos de massinha no Ibirapuera.",
   "minha primavera...",
-  "TAPA NA BUNDAAAAA"
+  "TAPA NA BUNDAAAAA",
 ];
 
 const app = document.querySelector("#app");
 
 app.innerHTML = `
   <div style="height:100vh; display:flex; flex-direction:column;">
-    <!-- Tabs -->
     <div style="
       display:flex;
       justify-content:center;
@@ -47,10 +48,7 @@ app.innerHTML = `
       <button id="tab-vazia" aria-selected="false">Sobre</button>
     </div>
 
-    <!-- Conteúdo -->
     <div style="flex:1;">
-      
-      <!-- Página principal (frases + momo) -->
       <div id="pagina-principal" style="
         height:100%;
         display:flex;
@@ -73,37 +71,33 @@ app.innerHTML = `
         <button id="btnMomo" type="button">Momo diz...</button>
       </div>
 
-      <div id="pagina-vazia" style="
-        height:100%;
-        display:none;
-      ">
-      <h3>O poema dedicado a Victor</h3>
-      <p>
-        Gosto do teu sorriso
-        porque ele me deixa à vontade.
+      <div id="pagina-vazia" style="height:100%; display:none;">
+        <h3>O poema dedicado a Victor</h3>
+        <p>
+          Gosto do teu sorriso
+          porque ele me deixa à vontade.
 
-        Conversar com você me faz bem,
-        me acalma,
-        me faz querer ficar um pouco mais.
+          Conversar com você me faz bem,
+          me acalma,
+          me faz querer ficar um pouco mais.
 
-        Não digo tudo de uma vez,
-        não por falta de vontade,
-        mas porque respeito o tempo das coisas.
+          Não digo tudo de uma vez,
+          não por falta de vontade,
+          mas porque respeito o tempo das coisas.
 
-        Talvez eu queira ser mais do que palavras trocadas,
-        talvez eu já queira,
-        mas espero o momento certo...
-      </p>
+          Talvez eu queira ser mais do que palavras trocadas,
+          talvez eu já queira,
+          mas espero o momento certo...
+        </p>
 
-      <h3>O momo</h3>
-       <img
+        <h3>O momo</h3>
+        <img
           src="${momoPhoto}"
           alt="Momo"
           width="300"
           height="300"
           class="momo-balanceando"
         />
-        <p></p>
       </div>
     </div>
   </div>
@@ -137,6 +131,55 @@ function fraseAleatoria() {
 
 spanFrase.textContent = fraseAleatoria();
 
-botao.addEventListener("click", () => {
+/**
+ * BALÕES (corações)
+ * Correção principal:
+ * - o #app precisa ser a referência do absolute (position:relative)
+ * - não usar overflow hidden no #app (senão corta o coração porque #app tem padding/max-width)
+ * - criar o coração dentro da página principal, pra não aparecer na aba "Sobre"
+ */
+const appRoot = document.querySelector("#app");
+const areaBaloes = paginaPrincipal; // onde os corações vão nascer/subir
+
+appRoot.style.position = "relative";
+appRoot.style.overflow = "visible"; // evita cortar os corações
+
+areaBaloes.style.position = "relative";
+areaBaloes.style.overflow = "hidden"; // aqui pode cortar sem problemas
+areaBaloes.style.minHeight = "100%";
+
+function criarBalao(clientX, clientY) {
+  const img = document.createElement("img");
+  img.src = heart;
+  img.alt = "";
+  img.className = "heart-img";
+
+  // coordenadas do clique relativas à areaBaloes
+  const rect = areaBaloes.getBoundingClientRect();
+  const left = clientX - rect.left;
+  const top = clientY - rect.top;
+
+  img.style.left = `${left}px`;
+  img.style.top = `${top}px`;
+
+  const size = 28 + Math.random() * 42; // 28..70
+  const dur = 1.2 + Math.random() * 1.2; // 1.2..2.4
+  const drift = (Math.random() * 2 - 1) * 60; // -60..60
+
+  img.style.width = `${size}px`;
+  img.style.setProperty("--dur", `${dur}s`);
+  img.style.setProperty("--drift", `${drift}px`);
+
+  areaBaloes.appendChild(img);
+  img.addEventListener("animationend", () => img.remove(), { once: true });
+}
+
+botao.addEventListener("click", (e) => {
   spanFrase.textContent = fraseAleatoria();
+  criarBalao(e.clientX, e.clientY);
+});
+
+paginaPrincipal.addEventListener("click", (e) => {
+  if (e.target.closest("#btnMomo")) return;
+  criarBalao(e.clientX, e.clientY);
 });
