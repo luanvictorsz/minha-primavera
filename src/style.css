@@ -6,7 +6,7 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background: #020024;
-  background: linear-gradient(360deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 100%);
+  background: linear-gradient(360deg, rgba(2, 0, 36, 1) 0%, rgb(0, 132, 255) 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -50,7 +50,7 @@ h1 {
 }
 
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em #00ccffaa);
 }
 .logo.vanilla:hover {
   filter: drop-shadow(0 0 2em #f7df1eaa);
@@ -112,8 +112,6 @@ button:focus-visible {
   animation: balancear 4s ease-in-out infinite;
   transform-origin: center top;
 }
-
-/* style.css (adicione no final) */
 
 .heart-img {
   position: absolute;

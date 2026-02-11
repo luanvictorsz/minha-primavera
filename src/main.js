@@ -131,21 +131,14 @@ function fraseAleatoria() {
 
 spanFrase.textContent = fraseAleatoria();
 
-/**
- * BALÕES (corações)
- * Correção principal:
- * - o #app precisa ser a referência do absolute (position:relative)
- * - não usar overflow hidden no #app (senão corta o coração porque #app tem padding/max-width)
- * - criar o coração dentro da página principal, pra não aparecer na aba "Sobre"
- */
 const appRoot = document.querySelector("#app");
-const areaBaloes = paginaPrincipal; // onde os corações vão nascer/subir
+const areaBaloes = paginaPrincipal; 
 
 appRoot.style.position = "relative";
-appRoot.style.overflow = "visible"; // evita cortar os corações
+appRoot.style.overflow = "visible"; 
 
 areaBaloes.style.position = "relative";
-areaBaloes.style.overflow = "hidden"; // aqui pode cortar sem problemas
+areaBaloes.style.overflow = "hidden"; 
 areaBaloes.style.minHeight = "100%";
 
 function criarBalao(clientX, clientY) {
@@ -154,7 +147,6 @@ function criarBalao(clientX, clientY) {
   img.alt = "";
   img.className = "heart-img";
 
-  // coordenadas do clique relativas à areaBaloes
   const rect = areaBaloes.getBoundingClientRect();
   const left = clientX - rect.left;
   const top = clientY - rect.top;
@@ -162,9 +154,9 @@ function criarBalao(clientX, clientY) {
   img.style.left = `${left}px`;
   img.style.top = `${top}px`;
 
-  const size = 28 + Math.random() * 42; // 28..70
-  const dur = 1.2 + Math.random() * 1.2; // 1.2..2.4
-  const drift = (Math.random() * 2 - 1) * 60; // -60..60
+  const size = 28 + Math.random() * 42;
+  const dur = 1.2 + Math.random() * 1.2; 
+  const drift = (Math.random() * 2 - 1) * 60; 
 
   img.style.width = `${size}px`;
   img.style.setProperty("--dur", `${dur}s`);
