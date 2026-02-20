@@ -66,7 +66,7 @@ function renderLojaModal() {
   overlay.innerHTML = `
     <div class="loja-modal">
       <div class="loja-modal-header">
-        <span class="loja-titulo">🛍️ Lojinha</span>
+        <span class="loja-titulo">🛍️ Lojinha da Misa</span>
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="loja-wallet">🍓 <strong>${wallet}</strong></span>
           <button class="loja-modal-close" aria-label="Fechar">✕</button>
