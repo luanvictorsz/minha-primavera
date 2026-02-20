@@ -1,5 +1,16 @@
-import momo from "../img/Momo.png";
+import "./style.css";
+import "./store.css";
 import heart from "../img/heart.png";
+
+import {
+  getWalletMorangos,
+  getActiveSkinImg,
+  SKINS,
+  getOwnedSkins,
+  getActiveSkinId,
+  setActiveSkin,
+  buySkin,
+} from "./pages/momoskins";
 
 const frases = [
   "minha primavera...",
@@ -34,21 +45,130 @@ export function fraseAleatoria() {
   return frases[Math.floor(Math.random() * frases.length)];
 }
 
+function showToast(msg) {
+  const toast = document.createElement("div");
+  toast.className = "store-toast";
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2400);
+}
+
+function renderLoja(lojaEl) {
+  const wallet   = getWalletMorangos();
+  const owned    = getOwnedSkins();
+  const activeId = getActiveSkinId();
+
+  lojaEl.innerHTML = `
+    <div class="loja-header">
+      <span class="loja-titulo">🛍️ Lojinha</span>
+      <span class="loja-wallet">🍓 <strong>${wallet}</strong> disponíveis</span>
+    </div>
+    <div class="loja-grid"></div>
+  `;
+
+  const grid = lojaEl.querySelector(".loja-grid");
+
+  for (const skin of SKINS) {
+    const isOwned   = owned.includes(skin.id);
+    const isActive  = skin.id === activeId;
+    const canAfford = wallet >= skin.price;
+
+    let badge  = "";
+    let action = "";
+
+    if (isActive) {
+      badge  = `<span class="loja-badge badge-active">Equipado</span>`;
+      action = `<button class="loja-btn btn-equipped" disabled>Equipado</button>`;
+    } else if (isOwned) {
+      badge  = `<span class="loja-badge badge-owned">Possuído</span>`;
+      action = `<button class="loja-btn btn-equip" data-id="${skin.id}">Equipar</button>`;
+    } else {
+      badge  = `<span class="loja-badge badge-price">🍓 ${skin.price}</span>`;
+      action = `<button
+        class="loja-btn btn-buy ${canAfford ? "" : "btn-locked"}"
+        data-id="${skin.id}"
+        ${canAfford ? "" : "disabled"}
+      >${canAfford ? "Comprar" : "🔒 " + skin.price}</button>`;
+    }
+
+    const card = document.createElement("div");
+    card.className = `loja-card ${isActive ? "card-active" : ""} ${!isOwned && !canAfford ? "card-locked" : ""}`;
+    card.innerHTML = `
+      ${badge}
+      <div class="loja-img-wrap">
+        <img src="${skin.img}" alt="${skin.name}" class="loja-img${!isOwned && !canAfford ? " skin-grayscale" : ""}" />
+      </div>
+      <p class="loja-name">${skin.name}</p>
+      ${action}
+    `;
+    grid.appendChild(card);
+  }
+
+  grid.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-id]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+
+    if (btn.classList.contains("btn-equip")) {
+      setActiveSkin(id);
+      document.querySelector("#momoMainImg")?.setAttribute("src", getActiveSkinImg());
+      renderLoja(lojaEl);
+      return;
+    }
+
+    if (btn.classList.contains("btn-buy")) {
+      const result = buySkin(id);
+      if (result.ok) {
+        setActiveSkin(id);
+        document.querySelector("#momoMainImg")?.setAttribute("src", getActiveSkinImg());
+        const walletEl = document.querySelector("#walletDisplay");
+        if (walletEl) walletEl.textContent = getWalletMorangos();
+        renderLoja(lojaEl);
+      } else {
+        showToast(result.reason);
+      }
+    }
+  });
+}
+
 export function criarPaginaPrincipal(container) {
+  const wallet   = getWalletMorangos();
+  const momoSkin = getActiveSkinImg();
+
   container.innerHTML = `
-    <span id="frase" style="font-size:18px;"></span>
-    <img src="${momo}" alt="Momo" width="200" height="300" class="momo-balanceando" />
-    <button id="btnMomo" type="button">Momo diz...</button>
+    <div class="principal-shell">
+
+      <div class="principal-topo">
+        <span id="frase" class="principal-frase"></span>
+
+        <div class="principal-morangos">
+          🍓 <strong id="walletDisplay">${wallet}</strong> morangos disponíveis
+        </div>
+
+        <img
+          id="momoMainImg"
+          src="${momoSkin}"
+          alt="Momo"
+          class="momo-balanceando principal-momo-img"
+        />
+
+        <button id="btnMomo" type="button">Momo diz...</button>
+      </div>
+
+      <div id="lojaInline" class="loja-inline"></div>
+
+    </div>
   `;
 
   container.style.position = "relative";
   container.style.overflow = "hidden";
-  container.style.minHeight = "100%";
 
   const spanFrase = container.querySelector("#frase");
-  const botao = container.querySelector("#btnMomo");
+  const botao     = container.querySelector("#btnMomo");
+  const lojaEl    = container.querySelector("#lojaInline");
 
   spanFrase.textContent = fraseAleatoria();
+  renderLoja(lojaEl);
 
   function criarBalao(clientX, clientY) {
     const img = document.createElement("img");
@@ -58,14 +178,14 @@ export function criarPaginaPrincipal(container) {
 
     const rect = container.getBoundingClientRect();
     img.style.left = `${clientX - rect.left}px`;
-    img.style.top = `${clientY - rect.top}px`;
+    img.style.top  = `${clientY - rect.top}px`;
 
-    const size = 28 + Math.random() * 42;
-    const dur = 1.2 + Math.random() * 1.2;
+    const size  = 28 + Math.random() * 42;
+    const dur   = 1.2 + Math.random() * 1.2;
     const drift = (Math.random() * 2 - 1) * 60;
 
     img.style.width = `${size}px`;
-    img.style.setProperty("--dur", `${dur}s`);
+    img.style.setProperty("--dur",   `${dur}s`);
     img.style.setProperty("--drift", `${drift}px`);
 
     container.appendChild(img);
@@ -78,7 +198,7 @@ export function criarPaginaPrincipal(container) {
   });
 
   container.addEventListener("click", (e) => {
-    if (e.target.closest("#btnMomo")) return;
+    if (e.target.closest("#btnMomo") || e.target.closest("#lojaInline")) return;
     criarBalao(e.clientX, e.clientY);
   });
 }

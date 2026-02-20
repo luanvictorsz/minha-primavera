@@ -1,8 +1,8 @@
 import "./style.css";
 import { criarPaginaPrincipal } from "./principal.js";
-import { criarPaginaSobre } from "./sobre.js";
-import { criarPaginaChat } from "./chat.js";
-import { criarPaginaJogo } from "./jogo.js";
+import { criarPaginaSobre }     from "./sobre.js";
+import { criarPaginaChat }      from "./chat.js";
+import { criarPaginaJogo }      from "./jogo.js";
 
 const app = document.querySelector("#app");
 
@@ -17,13 +17,13 @@ app.innerHTML = `
       flex-wrap:wrap;
     ">
       <button id="tab-principal" aria-selected="true">Momo</button>
-      <button id="tab-vazia" aria-selected="false">Sobre</button>
-      <button id="tab-chat" aria-selected="false">Chat</button>
-      <button id="tab-jogo" aria-selected="false">Jogo</button>
+      <button id="tab-vazia"     aria-selected="false">Sobre</button>
+      <button id="tab-chat"      aria-selected="false">Chat</button>
+      <button id="tab-jogo"      aria-selected="false">Jogo</button>
     </div>
 
-    <div style="flex:1; overflow:hidden;">
-      <div id="pagina-principal" style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; text-align:center;"></div>
+    <div style="flex:1; overflow-y:auto; overflow-x:hidden;">
+      <div id="pagina-principal" style="min-height:100%; display:flex; flex-direction:column; align-items:center; padding-bottom:24px;"></div>
       <div id="pagina-vazia"     style="height:100%; display:none; padding:16px;"></div>
       <div id="pagina-chat"      style="height:100%; display:none; padding:0;"></div>
       <div id="pagina-jogo"      style="height:100%; display:none; padding:14px;"></div>
@@ -71,6 +71,10 @@ function trocarPagina(pagina) {
     });
   } else {
     jogo.pauseGame();
+  }
+
+  if (pagina === "principal") {
+    criarPaginaPrincipal(paginaPrincipal);
   }
 }
 

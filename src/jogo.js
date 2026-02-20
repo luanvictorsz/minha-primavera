@@ -1,6 +1,8 @@
 import momo from "../img/Momo.png";
 import morango from "../img/morango.png";
 
+import { addTotalMorangos } from "../src/pages/momoskins.js";
+
 export function criarPaginaJogo(container) {
   container.innerHTML = `
     <div class="game-shell">
@@ -115,10 +117,14 @@ export function criarPaginaJogo(container) {
       const m = state.morangos[i];
       const dx = m.x - state.momoX;
       const dy = m.y - state.momoY;
+
       if (dx * dx + dy * dy <= (m.r + catchR) ** 2) {
         state.morangos.splice(i, 1);
+
         state.score += 1;
         scoreEl.textContent = String(state.score);
+
+        addTotalMorangos(1);
       }
     }
   }
