@@ -16,7 +16,7 @@ export function criarPaginaLoja(container) {
     container.innerHTML = `
       <div class="store-shell">
         <div class="store-header">
-          <h2 class="store-title">🍓 Lojinha da Momo</h2>
+          <h2 class="store-title">🍓 Lojinha da Misa</h2>
           <div class="store-wallet">
             <span>🍓</span>
             <strong id="walletCount">${wallet}</strong>

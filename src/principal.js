@@ -53,20 +53,32 @@ function showToast(msg) {
   setTimeout(() => toast.remove(), 2400);
 }
 
-function renderLoja(lojaEl) {
+function renderLojaModal() {
+  document.querySelector(".loja-modal-overlay")?.remove();
+
   const wallet   = getWalletMorangos();
   const owned    = getOwnedSkins();
   const activeId = getActiveSkinId();
 
-  lojaEl.innerHTML = `
-    <div class="loja-header">
-      <span class="loja-titulo">🛍️ Lojinha</span>
-      <span class="loja-wallet">🍓 <strong>${wallet}</strong> disponíveis</span>
+  const overlay = document.createElement("div");
+  overlay.className = "loja-modal-overlay";
+
+  overlay.innerHTML = `
+    <div class="loja-modal">
+      <div class="loja-modal-header">
+        <span class="loja-titulo">🛍️ Lojinha</span>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="loja-wallet">🍓 <strong>${wallet}</strong></span>
+          <button class="loja-modal-close" aria-label="Fechar">✕</button>
+        </div>
+      </div>
+      <div class="loja-grid" id="modalGrid"></div>
     </div>
-    <div class="loja-grid"></div>
   `;
 
-  const grid = lojaEl.querySelector(".loja-grid");
+  document.body.appendChild(overlay);
+
+  const grid = overlay.querySelector("#modalGrid");
 
   for (const skin of SKINS) {
     const isOwned   = owned.includes(skin.id);
@@ -104,6 +116,14 @@ function renderLoja(lojaEl) {
     grid.appendChild(card);
   }
 
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  overlay.querySelector(".loja-modal-close").addEventListener("click", () => {
+    overlay.remove();
+  });
+
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-id]");
     if (!btn) return;
@@ -112,7 +132,7 @@ function renderLoja(lojaEl) {
     if (btn.classList.contains("btn-equip")) {
       setActiveSkin(id);
       document.querySelector("#momoMainImg")?.setAttribute("src", getActiveSkinImg());
-      renderLoja(lojaEl);
+      renderLojaModal();
       return;
     }
 
@@ -123,12 +143,14 @@ function renderLoja(lojaEl) {
         document.querySelector("#momoMainImg")?.setAttribute("src", getActiveSkinImg());
         const walletEl = document.querySelector("#walletDisplay");
         if (walletEl) walletEl.textContent = getWalletMorangos();
-        renderLoja(lojaEl);
+        renderLojaModal();
       } else {
         showToast(result.reason);
       }
     }
   });
+
+  requestAnimationFrame(() => overlay.classList.add("loja-modal-visible"));
 }
 
 export function criarPaginaPrincipal(container) {
@@ -138,25 +160,22 @@ export function criarPaginaPrincipal(container) {
   container.innerHTML = `
     <div class="principal-shell">
 
-      <div class="principal-topo">
+      <!-- header: frase à esquerda, botão loja à direita -->
+      <div class="principal-header">
         <span id="frase" class="principal-frase"></span>
-
-        <div class="principal-morangos">
-          🍓 <strong id="walletDisplay">${wallet}</strong> morangos disponíveis
-        </div>
-
-        <img
-          id="momoMainImg"
-          src="${momoSkin}"
-          alt="Momo"
-          class="momo-balanceando principal-momo-img"
-        />
-
-        <button id="btnMomo" type="button">Momo diz...</button>
+        <button id="btnLoja" class="btn-loja-flutuante" type="button">
+          🛍️ <span id="walletDisplay">${wallet}</span>🍓
+        </button>
       </div>
 
-      <div id="lojaInline" class="loja-inline"></div>
+      <img
+        id="momoMainImg"
+        src="${momoSkin}"
+        alt="Momo"
+        class="momo-balanceando principal-momo-img"
+      />
 
+      <button id="btnMomo" type="button">Momo diz...</button>
     </div>
   `;
 
@@ -164,11 +183,9 @@ export function criarPaginaPrincipal(container) {
   container.style.overflow = "hidden";
 
   const spanFrase = container.querySelector("#frase");
-  const botao     = container.querySelector("#btnMomo");
-  const lojaEl    = container.querySelector("#lojaInline");
+  container.querySelector("#btnLoja").addEventListener("click", () => renderLojaModal());
 
   spanFrase.textContent = fraseAleatoria();
-  renderLoja(lojaEl);
 
   function criarBalao(clientX, clientY) {
     const img = document.createElement("img");
@@ -192,13 +209,13 @@ export function criarPaginaPrincipal(container) {
     img.addEventListener("animationend", () => img.remove(), { once: true });
   }
 
-  botao.addEventListener("click", (e) => {
+  container.querySelector("#btnMomo").addEventListener("click", (e) => {
     spanFrase.textContent = fraseAleatoria();
     criarBalao(e.clientX, e.clientY);
   });
 
   container.addEventListener("click", (e) => {
-    if (e.target.closest("#btnMomo") || e.target.closest("#lojaInline")) return;
+    if (e.target.closest("#btnMomo") || e.target.closest("#btnLoja")) return;
     criarBalao(e.clientX, e.clientY);
   });
 }

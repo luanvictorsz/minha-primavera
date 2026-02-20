@@ -1,89 +1,141 @@
-/* ── Página principal ────────────────────────────────────────────────────── */
 .principal-shell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 14px;
   width: 100%;
-  padding: 12px 12px 32px;
+  height: 100%;
+  padding: 16px 12px;
   box-sizing: border-box;
 }
 
-.principal-topo {
+.principal-header {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: column-reverse;
+  align-items: flex-end;
   gap: 8px;
 }
 
 .principal-frase {
-  font-size: 16px;
+  width: 100%;
+  font-size: 15px;
   text-align: center;
-  max-width: 280px;
+  min-height: 2em;
+  line-height: 1.4;
 }
 
-.principal-morangos {
-  opacity: .85;
-  font-size: 13px;
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* Momo principal — pequeno e controlado */
 .principal-momo-img {
-  width: 120px !important;
-  height: 150px !important;
+  width: min(70vw, 260px) !important;
+  height: min(85vw, 320px) !important;
   object-fit: contain !important;
   display: block;
 }
 
-/* ── Loja inline ─────────────────────────────────────────────────────────── */
-.loja-inline {
-  width: 100%;
-  max-width: 480px;
+.btn-loja-flutuante {
+  background: rgba(255, 80, 120, 0.18);
+  border: 1.5px solid rgba(255, 80, 120, 0.5);
+  color: inherit;
+  border-radius: 999px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+  white-space: nowrap;
 }
 
-.loja-header {
+.btn-loja-flutuante:hover  { background: rgba(255, 80, 120, 0.32); }
+.btn-loja-flutuante:active { transform: scale(.93); }
+
+.loja-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+.loja-modal-overlay.loja-modal-visible {
+  opacity: 1;
+}
+
+.loja-modal-overlay.loja-modal-visible .loja-modal {
+  transform: translateY(0);
+}
+
+.loja-modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: 75vh;
+  background: #0f1f2a;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 16px 32px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+}
+
+.loja-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-  gap: 6px;
+  margin-bottom: 16px;
 }
 
 .loja-titulo {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
 }
 
 .loja-wallet {
-  font-size: 13px;
+  font-size: 14px;
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.15);
   border-radius: 999px;
-  padding: 3px 10px;
+  padding: 4px 12px;
 }
 
-/* grid — 3 colunas em mobile */
+.loja-modal-close {
+  background: rgba(255,255,255,.1);
+  border: none;
+  color: #fff;
+  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+}
+
+.loja-modal-close:hover { background: rgba(255,255,255,.2); }
+
 .loja-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 10px;
 }
 
-/* card */
 .loja-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   background: rgba(255,255,255,.05);
   border: 2px solid rgba(255,255,255,.1);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 10px 6px 8px;
   box-sizing: border-box;
   transition: border-color .2s, transform .15s;
@@ -101,7 +153,6 @@
 
 .card-locked { opacity: .55; }
 
-/* badge */
 .loja-badge {
   position: absolute;
   top: 5px;
@@ -117,7 +168,6 @@
 .badge-owned  { background: rgba(255,255,255,.15); color: #fff; }
 .badge-price  { background: rgba(255,80,120,.25); color: #ff8aaa; }
 
-/* imagem — tamanho fixo, nunca extrapola */
 .loja-img-wrap {
   width: 60px;
   height: 72px;
@@ -146,7 +196,6 @@
   line-height: 1.2;
 }
 
-/* botões */
 .loja-btn {
   width: 100%;
   border: none;
@@ -179,10 +228,9 @@
   cursor: not-allowed;
 }
 
-/* toast */
 .store-toast {
   position: fixed;
-  bottom: 72px;
+  bottom: 80px;
   left: 50%;
   transform: translateX(-50%);
   background: #1a1a1a;
