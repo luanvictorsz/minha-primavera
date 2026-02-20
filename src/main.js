@@ -1,6 +1,7 @@
 import "./style.css";
 import momo from "../img/Momo.png";
 import heart from "../img/heart.png";
+import morango from "../img/morango.png";
 import momoPhoto from "../img/momoPhoto.jpeg";
 
 const frases = [
@@ -200,6 +201,7 @@ app.innerHTML = `
               <div class="game-card">
                 <h3 style="margin:0 0 6px;">Momo Voador</h3>
                 <p style="margin:0 0 12px; opacity:.9;">
+                  Pegue os morangos!<br />
                   Mantenha o dedo/mouse pressionado para subir.<br />
                   Solte para descer.<br />
                   Não encoste no topo nem no fundo.
@@ -397,6 +399,9 @@ const bestEl = document.querySelector("#best");
 const momoImg = new Image();
 momoImg.src = momo;
 
+const morangoImg = new Image();
+morangoImg.src = morango;
+
 let rafId = 0;
 let running = false;
 let started = false;
@@ -415,12 +420,24 @@ const state = {
   momoY: 0,
   momoVY: 0,
 
-  gravity: 1600, 
-  lift: -1400,   
+  gravity: 1600,
+  lift: -1400,
   radius: 28,
+
+  // MORANGOS
+  morangos: [],
+  spawnTimer: 0,
+  nextSpawn: 0.75,
+  morangoRadius: 18,
+  morangoMinSpeed: 260,
+  morangoMaxSpeed: 460,
 };
 
 bestEl.textContent = String(state.best);
+
+function rand(min, max) {
+  return min + Math.random() * (max - min);
+}
 
 function resizeCanvas() {
   const rect = gameArea.getBoundingClientRect();
@@ -451,9 +468,43 @@ window.addEventListener("resize", () => {
   }
 });
 
+function spawnMorango() {
+  const pad = 24;
+  const y = rand(pad, viewH - pad);
+  const speed = rand(state.morangoMinSpeed, state.morangoMaxSpeed);
+
+  state.morangos.push({
+    x: viewW + 40,
+    y,
+    vx: -speed,
+    r: state.morangoRadius,
+  });
+}
+
+function checkCatchMorango() {
+  const catchR = state.radius * 0.85;
+
+  for (let i = state.morangos.length - 1; i >= 0; i--) {
+    const m = state.morangos[i];
+    const dx = m.x - state.momoX;
+    const dy = m.y - state.momoY;
+    const rr = m.r + catchR;
+
+    if (dx * dx + dy * dy <= rr * rr) {
+      state.morangos.splice(i, 1);
+      state.score += 1;
+      scoreEl.textContent = String(state.score);
+    }
+  }
+}
+
 function resetGame() {
   state.score = 0;
   scoreEl.textContent = "0";
+
+  state.morangos = [];
+  state.spawnTimer = 0;
+  state.nextSpawn = rand(0.45, 0.9);
 
   state.momoX = viewW * 0.35;
   state.momoY = viewH * 0.5;
@@ -465,7 +516,7 @@ function resetGame() {
   overlay.classList.remove("hidden");
   overlay.querySelector("h3").textContent = "Momo Voador";
   overlay.querySelector("p").innerHTML =
-    "Mantenha o dedo/mouse pressionado para subir.<br />Solte para descer.<br />Não encoste no topo nem no fundo.";
+    "Pegue os morangos!<br />Segure para subir.<br />Solte para descer.<br />Não encoste no topo nem no fundo.";
   btnStart.textContent = "Começar";
 
   drawFrame();
@@ -492,7 +543,7 @@ function pauseGame() {
 function gameOver() {
   pauseGame();
 
-  const shownScore = Math.floor(state.score);
+  const shownScore = state.score;
   state.best = Math.max(state.best, shownScore);
   localStorage.setItem("momo_best", String(state.best));
   bestEl.textContent = String(state.best);
@@ -523,11 +574,22 @@ function loop(t) {
   }
 
   state.momoVY = Math.max(-850, Math.min(850, state.momoVY));
-
   state.momoY += state.momoVY * dt;
 
-  state.score += dt;
-  scoreEl.textContent = String(Math.floor(state.score));
+  state.spawnTimer += dt;
+  if (state.spawnTimer >= state.nextSpawn) {
+    state.spawnTimer = 0;
+    state.nextSpawn = rand(0.35, 0.85);
+    spawnMorango();
+  }
+
+  for (let i = state.morangos.length - 1; i >= 0; i--) {
+    const m = state.morangos[i];
+    m.x += m.vx * dt;
+    if (m.x < -60) state.morangos.splice(i, 1);
+  }
+
+  checkCatchMorango();
 
   if (clampCollision()) {
     drawFrame();
@@ -552,6 +614,18 @@ function drawFrame() {
   ctx.fillStyle = "rgba(255,255,255,.10)";
   ctx.fillRect(0, 0, w, 10);
   ctx.fillRect(0, h - 10, w, 10);
+
+  for (const m of state.morangos) {
+    const size = m.r * 2;
+    if (morangoImg.complete && morangoImg.naturalWidth > 0) {
+      ctx.drawImage(morangoImg, m.x - m.r, m.y - m.r, size, size);
+    } else {
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 80, 120, .9)";
+      ctx.fill();
+    }
+  }
 
   ctx.beginPath();
   ctx.arc(state.momoX, state.momoY, state.radius + 10, 0, Math.PI * 2);
