@@ -1,4 +1,3 @@
-// main.js (com 3ª aba "Chat" simulando WhatsApp)
 import "./style.css";
 import momo from "../img/Momo.png";
 import heart from "../img/heart.png";
@@ -43,10 +42,12 @@ app.innerHTML = `
       gap:12px;
       padding:12px;
       border-bottom:1px solid rgba(0,0,0,.15);
+      flex-wrap:wrap;
     ">
       <button id="tab-principal" aria-selected="true">Momo</button>
       <button id="tab-vazia" aria-selected="false">Sobre</button>
       <button id="tab-chat" aria-selected="false">Chat</button>
+      <button id="tab-jogo" aria-selected="false">Jogo</button>
     </div>
 
     <div style="flex:1;">
@@ -108,7 +109,6 @@ app.innerHTML = `
           flex-direction:column;
           background:#0b141a;
         ">
-          <!-- Topbar tipo WhatsApp -->
           <div style="
             display:flex;
             align-items:center;
@@ -131,7 +131,6 @@ app.innerHTML = `
             </div>
           </div>
 
-          <!-- Mensagens -->
           <div id="chat-messages" style="
             flex:1;
             overflow:auto;
@@ -145,7 +144,6 @@ app.innerHTML = `
               #0b141a;
           "></div>
 
-          <!-- Input -->
           <form id="chat-form" style="
             display:flex;
             gap:10px;
@@ -186,6 +184,36 @@ app.innerHTML = `
           </form>
         </div>
       </div>
+
+      <!-- PÁGINA: JOGO -->
+      <div id="pagina-jogo" style="height:100%; display:none; padding:14px;">
+        <div class="game-shell">
+          <div class="game-hud">
+            <div><strong>Pontos:</strong> <span id="score">0</span></div>
+            <div><strong>Recorde:</strong> <span id="best">0</span></div>
+          </div>
+
+          <div id="game-area" class="game-area" role="button" aria-label="Área do jogo">
+            <canvas id="game-canvas"></canvas>
+
+            <div id="game-overlay" class="game-overlay">
+              <div class="game-card">
+                <h3 style="margin:0 0 6px;">Momo Voador</h3>
+                <p style="margin:0 0 12px; opacity:.9;">
+                  Mantenha o dedo/mouse pressionado para subir.<br />
+                  Solte para descer.<br />
+                  Não encoste no topo nem no fundo.
+                </p>
+                <button id="btnStart" type="button">Começar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="game-help">
+            Segurou = sobe • Soltou = desce
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 `;
@@ -193,30 +221,44 @@ app.innerHTML = `
 const tabPrincipal = document.querySelector("#tab-principal");
 const tabVazia = document.querySelector("#tab-vazia");
 const tabChat = document.querySelector("#tab-chat");
+const tabJogo = document.querySelector("#tab-jogo");
 
 const paginaPrincipal = document.querySelector("#pagina-principal");
 const paginaVazia = document.querySelector("#pagina-vazia");
 const paginaChat = document.querySelector("#pagina-chat");
+const paginaJogo = document.querySelector("#pagina-jogo");
 
 function trocarPagina(pagina) {
   const principalAtiva = pagina === "principal";
   const vaziaAtiva = pagina === "vazia";
   const chatAtiva = pagina === "chat";
+  const jogoAtiva = pagina === "jogo";
 
   tabPrincipal.setAttribute("aria-selected", String(principalAtiva));
   tabVazia.setAttribute("aria-selected", String(vaziaAtiva));
   tabChat.setAttribute("aria-selected", String(chatAtiva));
+  tabJogo.setAttribute("aria-selected", String(jogoAtiva));
 
   paginaPrincipal.style.display = principalAtiva ? "flex" : "none";
   paginaVazia.style.display = vaziaAtiva ? "block" : "none";
   paginaChat.style.display = chatAtiva ? "block" : "none";
+  paginaJogo.style.display = jogoAtiva ? "block" : "none";
+
+  if (jogoAtiva) {
+    requestAnimationFrame(() => {
+      resizeCanvas();
+      resetGame();
+    });
+  } else {
+    pauseGame();
+  }
 }
 
 tabPrincipal.addEventListener("click", () => trocarPagina("principal"));
 tabVazia.addEventListener("click", () => trocarPagina("vazia"));
 tabChat.addEventListener("click", () => trocarPagina("chat"));
+tabJogo.addEventListener("click", () => trocarPagina("jogo"));
 
-/* ---------- Página principal (Momo + corações) ---------- */
 const spanFrase = document.querySelector("#frase");
 const botao = document.querySelector("#btnMomo");
 
@@ -320,13 +362,7 @@ function addMessage({ from, text }) {
 mensagensIniciais.forEach(addMessage);
 
 function responderAuto() {
-  const respostas = [
-    "Eu te amo",
-    "tô com saudade 🥺",
-    "aish",
-    "meu vampirinho",
-    fraseAleatoria(),
-  ];
+  const respostas = ["Eu te amo", "tô com saudade 🥺", "aish", "meu vampirinho", fraseAleatoria()];
   const text = respostas[Math.floor(Math.random() * respostas.length)];
   addMessage({ from: "them", text });
 }
@@ -347,4 +383,218 @@ chatForm.addEventListener("submit", (e) => {
     if (last && last.textContent.includes("digitando...")) last.remove();
     responderAuto();
   }, 700 + Math.random() * 800);
+});
+
+const gameArea = document.querySelector("#game-area");
+const canvas = document.querySelector("#game-canvas");
+const ctx = canvas.getContext("2d");
+
+const overlay = document.querySelector("#game-overlay");
+const btnStart = document.querySelector("#btnStart");
+const scoreEl = document.querySelector("#score");
+const bestEl = document.querySelector("#best");
+
+const momoImg = new Image();
+momoImg.src = momo;
+
+let rafId = 0;
+let running = false;
+let started = false;
+
+let pressing = false;
+
+let viewW = 0;
+let viewH = 0;
+
+const state = {
+  t0: 0,
+  score: 0,
+  best: Number(localStorage.getItem("momo_best") || 0),
+
+  momoX: 0,
+  momoY: 0,
+  momoVY: 0,
+
+  gravity: 1600, 
+  lift: -1400,   
+  radius: 28,
+};
+
+bestEl.textContent = String(state.best);
+
+function resizeCanvas() {
+  const rect = gameArea.getBoundingClientRect();
+  viewW = rect.width;
+  viewH = rect.height;
+
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+  canvas.width = Math.floor(rect.width * dpr);
+  canvas.height = Math.floor(rect.height * dpr);
+  canvas.style.width = `${rect.width}px`;
+  canvas.style.height = `${rect.height}px`;
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (!started) {
+    state.momoX = viewW * 0.35;
+    state.momoY = viewH * 0.5;
+    state.momoVY = 0;
+    drawFrame();
+  }
+}
+
+window.addEventListener("resize", () => {
+  if (paginaJogo.style.display !== "none") {
+    resizeCanvas();
+    drawFrame();
+  }
+});
+
+function resetGame() {
+  state.score = 0;
+  scoreEl.textContent = "0";
+
+  state.momoX = viewW * 0.35;
+  state.momoY = viewH * 0.5;
+  state.momoVY = 0;
+
+  pressing = false;
+  started = false;
+
+  overlay.classList.remove("hidden");
+  overlay.querySelector("h3").textContent = "Momo Voador";
+  overlay.querySelector("p").innerHTML =
+    "Mantenha o dedo/mouse pressionado para subir.<br />Solte para descer.<br />Não encoste no topo nem no fundo.";
+  btnStart.textContent = "Começar";
+
+  drawFrame();
+}
+
+function startGame() {
+  if (running) return;
+
+  running = true;
+  started = true;
+  overlay.classList.add("hidden");
+
+  state.t0 = performance.now();
+  rafId = requestAnimationFrame(loop);
+}
+
+function pauseGame() {
+  running = false;
+  pressing = false;
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = 0;
+}
+
+function gameOver() {
+  pauseGame();
+
+  const shownScore = Math.floor(state.score);
+  state.best = Math.max(state.best, shownScore);
+  localStorage.setItem("momo_best", String(state.best));
+  bestEl.textContent = String(state.best);
+
+  overlay.classList.remove("hidden");
+  overlay.querySelector("h3").textContent = "Você perdeu :(";
+  overlay.querySelector("p").innerHTML =
+    `Você fez <strong>${shownScore}</strong> ponto(s).<br />Clique em reiniciar e tenta de novo.`;
+  btnStart.textContent = "Reiniciar";
+}
+
+function clampCollision() {
+  if (state.momoY - state.radius <= 10) return true;
+  if (state.momoY + state.radius >= viewH - 10) return true;
+  return false;
+}
+
+function loop(t) {
+  if (!running) return;
+
+  const dt = Math.min(0.032, (t - state.t0) / 1000);
+  state.t0 = t;
+
+  if (pressing) {
+    state.momoVY += state.lift * dt;
+  } else {
+    state.momoVY += state.gravity * dt;
+  }
+
+  state.momoVY = Math.max(-850, Math.min(850, state.momoVY));
+
+  state.momoY += state.momoVY * dt;
+
+  state.score += dt;
+  scoreEl.textContent = String(Math.floor(state.score));
+
+  if (clampCollision()) {
+    drawFrame();
+    gameOver();
+    return;
+  }
+
+  drawFrame();
+  rafId = requestAnimationFrame(loop);
+}
+
+function drawFrame() {
+  const w = viewW;
+  const h = viewH;
+  if (!w || !h) return;
+
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.fillStyle = "#0b141a";
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.fillStyle = "rgba(255,255,255,.10)";
+  ctx.fillRect(0, 0, w, 10);
+  ctx.fillRect(0, h - 10, w, 10);
+
+  ctx.beginPath();
+  ctx.arc(state.momoX, state.momoY, state.radius + 10, 0, Math.PI * 2);
+  ctx.fillStyle = "rgba(0,168,132,.12)";
+  ctx.fill();
+
+  const angle = Math.max(-0.45, Math.min(0.8, state.momoVY / 900));
+  const imgW = 90;
+  const imgH = 120;
+
+  ctx.save();
+  ctx.translate(state.momoX, state.momoY);
+  ctx.rotate(angle);
+
+  if (momoImg.complete && momoImg.naturalWidth > 0) {
+    ctx.drawImage(momoImg, -imgW / 2, -imgH / 2, imgW, imgH);
+  } else {
+    ctx.fillStyle = "rgba(255,255,255,.85)";
+    ctx.fillRect(-20, -20, 40, 40);
+  }
+
+  ctx.restore();
+}
+
+btnStart.addEventListener("click", () => {
+  resetGame();
+  startGame();
+});
+
+gameArea.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  if (!started) startGame();
+  pressing = true;
+});
+
+gameArea.addEventListener("pointerup", () => (pressing = false));
+gameArea.addEventListener("pointerleave", () => (pressing = false));
+gameArea.addEventListener("pointercancel", () => (pressing = false));
+window.addEventListener("pointerup", () => (pressing = false));
+
+requestAnimationFrame(() => {
+  if (paginaJogo.style.display !== "none") {
+    resizeCanvas();
+    resetGame();
+  }
 });
