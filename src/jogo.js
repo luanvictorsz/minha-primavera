@@ -1,4 +1,4 @@
-import momo from "../img/Momo.png";
+import momo from "../img/momoAviao.png";
 import morango from "../img/morango.png";
 
 import { addTotalMorangos } from "../src/pages/momoskins.js";
@@ -55,6 +55,17 @@ export function criarPaginaJogo(container) {
   let viewW = 0;
   let viewH = 0;
 
+  // Tamanho base do momo — ajusta proporção quando a imagem carregar
+  const MOMO_BASE = 90; // largura fixa em px
+  let momoImgW = MOMO_BASE;
+  let momoImgH = MOMO_BASE;
+
+  momoImg.onload = () => {
+    const ratio = momoImg.naturalHeight / momoImg.naturalWidth;
+    momoImgW = MOMO_BASE;
+    momoImgH = Math.round(MOMO_BASE * ratio);
+  };
+
   const state = {
     t0: 0,
     score: 0,
@@ -95,7 +106,7 @@ export function criarPaginaJogo(container) {
 
     if (!started) {
       state.momoX = viewW * 0.35;
-      state.momoY = viewH * 0.5;
+      state.momoY = viewH * 0.3;
       state.momoVY = 0;
       drawFrame();
     }
@@ -120,10 +131,8 @@ export function criarPaginaJogo(container) {
 
       if (dx * dx + dy * dy <= (m.r + catchR) ** 2) {
         state.morangos.splice(i, 1);
-
         state.score += 1;
         scoreEl.textContent = String(state.score);
-
         addTotalMorangos(1);
       }
     }
@@ -166,8 +175,10 @@ export function criarPaginaJogo(container) {
     ctx.fill();
 
     const angle = Math.max(-0.45, Math.min(0.8, state.momoVY / 900));
-    const imgW = 90;
-    const imgH = 120;
+
+    // usa proporção real da imagem carregada
+    const imgW = momoImgW;
+    const imgH = momoImgH;
 
     ctx.save();
     ctx.translate(state.momoX, state.momoY);
