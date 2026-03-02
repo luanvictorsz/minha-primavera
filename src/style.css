@@ -255,3 +255,67 @@ button:focus-visible {
   opacity: .75;
   text-align: center;
 }
+
+/* Tela de seleção de jogos */
+.game-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  gap: 24px;
+  min-height: 100%;
+}
+
+.game-selection__title {
+  margin: 0;
+  font-size: 1.5rem;
+  opacity: .9;
+}
+
+.game-selection__grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.game-card-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 160px;
+  padding: 24px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  cursor: pointer;
+  color: inherit;
+  transition: background .15s, transform .1s;
+  text-align: center;
+}
+
+.game-card-btn:hover {
+  background: rgba(255,255,255,.13);
+  transform: translateY(-2px);
+}
+
+.game-card-btn:active {
+  transform: translateY(0);
+}
+
+.game-card-btn__icon {
+  font-size: 2.8rem;
+  line-height: 1;
+}
+
+.game-card-btn__name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.game-card-btn__desc {
+  font-size: .78rem;
+  opacity: .65;
+  line-height: 1.4;
+}

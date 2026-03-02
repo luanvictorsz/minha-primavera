@@ -1,7 +1,7 @@
-import momo from "../img/momoAviao.png";
-import morango from "../img/morango.png";
+import momo from "../../img/momoAviao.png";
+import morango from "../../img/morango.png";
 
-import { addTotalMorangos } from "../src/pages/momoskins.js";
+import { addTotalMorangos } from "../pages/momoskins.js";
 
 export function criarPaginaJogo(container) {
   container.innerHTML = `

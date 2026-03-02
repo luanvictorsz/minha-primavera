@@ -1,8 +1,8 @@
 import "./style.css";
-import { criarPaginaPrincipal } from "./principal.js";
-import { criarPaginaSobre }     from "./sobre.js";
-import { criarPaginaChat }      from "./chat.js";
-import { criarPaginaJogo }      from "./jogo.js";
+import { criarPaginaPrincipal }     from "./principal.js";
+import { criarPaginaSobre }         from "./sobre.js";
+import { criarPaginaChat }          from "./chat.js";
+import { criarPaginaSelecaoJogo }   from "./jogoselecao.js"; 
 
 const app = document.querySelector("#app");
 
@@ -39,7 +39,7 @@ const paginaJogo      = document.querySelector("#pagina-jogo");
 criarPaginaPrincipal(paginaPrincipal);
 criarPaginaSobre(paginaVazia);
 criarPaginaChat(paginaChat);
-const jogo = criarPaginaJogo(paginaJogo);
+const jogo = criarPaginaSelecaoJogo(paginaJogo); 
 
 const tabs = {
   principal: document.querySelector("#tab-principal"),
@@ -67,7 +67,6 @@ function trocarPagina(pagina) {
   if (pagina === "jogo") {
     requestAnimationFrame(() => {
       jogo.resizeCanvas();
-      jogo.resetGame();
     });
   } else {
     jogo.pauseGame();
