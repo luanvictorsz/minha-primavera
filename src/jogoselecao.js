@@ -14,7 +14,7 @@ export function criarPaginaSelecaoJogo(container) {
         <div class="game-selection__grid">
 
           <button class="game-card-btn" id="btn-flap">
-            <div class="game-card-btn__icon">🛩️</div>
+            <div class="game-card-btn__icon"><img src="../img/momoAviao.png" alt="Momo Avião" width="100" height="100"></div>
             <div class="game-card-btn__name">Flap Momo</div>
             <div class="game-card-btn__desc">
               Desvie das bordas e pegue morangos voando!
@@ -22,7 +22,7 @@ export function criarPaginaSelecaoJogo(container) {
           </button>
 
           <button class="game-card-btn" id="btn-infinite">
-            <div class="game-card-btn__icon">🏃</div>
+            <div class="game-card-btn__icon"><img src="../img/momoCar.png" alt="Momo Carro" width="100" height="100"></div>
             <div class="game-card-btn__name">Infinite Momo</div>
             <div class="game-card-btn__desc">
               Corra infinitamente e desvie dos obstáculos!
