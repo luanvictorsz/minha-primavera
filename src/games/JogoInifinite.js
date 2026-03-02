@@ -1,4 +1,4 @@
-import momo from "../../img/momoAviao.png";
+import momo from "../../img/momoCar.png";
 import { addTotalMorangos } from "../../src/pages/momoskins.js";
 
 export function criarPaginaInfiniteJogo(container) {
