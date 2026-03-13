@@ -141,8 +141,6 @@ function renderLojaModal() {
       if (result.ok) {
         setActiveSkin(id);
         document.querySelector("#momoMainImg")?.setAttribute("src", getActiveSkinImg());
-        const walletEl = document.querySelector("#walletDisplay");
-        if (walletEl) walletEl.textContent = getWalletMorangos();
         renderLojaModal();
       } else {
         showToast(result.reason);
@@ -154,19 +152,11 @@ function renderLojaModal() {
 }
 
 export function criarPaginaPrincipal(container) {
-  const wallet   = getWalletMorangos();
   const momoSkin = getActiveSkinImg();
 
   container.innerHTML = `
     <div class="principal-shell">
-
-      <!-- header: frase à esquerda, botão loja à direita -->
-      <div class="principal-header">
-        <span id="frase" class="principal-frase"></span>
-        <button id="btnLoja" class="btn-loja-flutuante" type="button">
-          🛍️ <span id="walletDisplay">${wallet}</span>🍓
-        </button>
-      </div>
+      <span id="frase" class="principal-frase"></span>
 
       <img
         id="momoMainImg"
@@ -179,12 +169,9 @@ export function criarPaginaPrincipal(container) {
     </div>
   `;
 
-  container.style.position = "relative";
-  container.style.overflow = "hidden";
+  container.style.cssText = "position:relative; overflow:hidden; height:100%;";
 
   const spanFrase = container.querySelector("#frase");
-  container.querySelector("#btnLoja").addEventListener("click", () => renderLojaModal());
-
   spanFrase.textContent = fraseAleatoria();
 
   function criarBalao(clientX, clientY) {
@@ -194,16 +181,16 @@ export function criarPaginaPrincipal(container) {
     img.className = "heart-img";
 
     const rect = container.getBoundingClientRect();
-    img.style.left = `${clientX - rect.left}px`;
-    img.style.top  = `${clientY - rect.top}px`;
-
     const size  = 28 + Math.random() * 42;
     const dur   = 1.2 + Math.random() * 1.2;
     const drift = (Math.random() * 2 - 1) * 60;
 
-    img.style.width = `${size}px`;
-    img.style.setProperty("--dur",   `${dur}s`);
-    img.style.setProperty("--drift", `${drift}px`);
+    img.style.position  = "absolute";
+    img.style.left      = (clientX - rect.left) + "px";
+    img.style.top       = (clientY - rect.top) + "px";
+    img.style.width     = size + "px";
+    img.style.setProperty("--dur",   dur + "s");
+    img.style.setProperty("--drift", drift + "px");
 
     container.appendChild(img);
     img.addEventListener("animationend", () => img.remove(), { once: true });
@@ -215,7 +202,7 @@ export function criarPaginaPrincipal(container) {
   });
 
   container.addEventListener("click", (e) => {
-    if (e.target.closest("#btnMomo") || e.target.closest("#btnLoja")) return;
+    if (e.target.closest("#btnMomo")) return;
     criarBalao(e.clientX, e.clientY);
   });
 }

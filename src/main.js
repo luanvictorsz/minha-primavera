@@ -1,82 +1,98 @@
 import "./style.css";
-import { criarPaginaPrincipal }     from "./principal.js";
-import { criarPaginaSobre }         from "./sobre.js";
-import { criarPaginaChat }          from "./chat.js";
-import { criarPaginaSelecaoJogo }   from "./jogoselecao.js"; 
+import { criarPaginaPrincipal }   from "./principal.js";
+import { criarPaginaSobre }       from "./sobre.js";
+import { criarPaginaChat }        from "./chat.js";
+import { criarPaginaSelecaoJogo } from "./jogoselecao.js";
+import { criarPaginaLoja }        from "./pages/momoStore.js";
 
 const app = document.querySelector("#app");
 
 app.innerHTML = `
-  <div style="height:100vh; display:flex; flex-direction:column;">
-    <div style="
-      display:flex;
-      justify-content:center;
-      gap:12px;
-      padding:12px;
-      border-bottom:1px solid rgba(0,0,0,.15);
-      flex-wrap:wrap;
-    ">
-      <button id="tab-principal" aria-selected="true">Momo</button>
-      <button id="tab-vazia"     aria-selected="false">Sobre</button>
-      <button id="tab-chat"      aria-selected="false">Chat</button>
-      <button id="tab-jogo"      aria-selected="false">Jogo</button>
+  <div class="app-root">
+    <div class="page-container">
+      <div id="pagina-principal" class="page page--active"></div>
+      <div id="pagina-sobre"     class="page"></div>
+      <div id="pagina-chat"      class="page page--chat"></div>
+      <div id="pagina-jogo"      class="page page--jogo"></div>
+      <div id="pagina-loja"      class="page"></div>
     </div>
 
-    <div style="flex:1; overflow-y:auto; overflow-x:hidden;">
-      <div id="pagina-principal" style="min-height:100%; display:flex; flex-direction:column; align-items:center; padding-bottom:24px;"></div>
-      <div id="pagina-vazia"     style="height:100%; display:none; padding:16px;"></div>
-      <div id="pagina-chat"      style="height:100%; display:none; padding:0;"></div>
-      <div id="pagina-jogo"      style="height:100%; display:none; padding:14px;"></div>
-    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item nav-item--active" data-tab="principal">
+        <span class="nav-icon">🐾</span>
+        <span class="nav-label">Momo</span>
+      </button>
+      <button class="nav-item" data-tab="sobre">
+        <span class="nav-icon">💌</span>
+        <span class="nav-label">Sobre</span>
+      </button>
+      <button class="nav-item" data-tab="chat">
+        <span class="nav-icon">💬</span>
+        <span class="nav-label">Chat</span>
+      </button>
+      <button class="nav-item" data-tab="jogo">
+        <span class="nav-icon">🎮</span>
+        <span class="nav-label">Jogos</span>
+      </button>
+      <button class="nav-item" data-tab="loja">
+        <span class="nav-icon">🛍️</span>
+        <span class="nav-label">Loja</span>
+      </button>
+    </nav>
   </div>
 `;
 
 const paginaPrincipal = document.querySelector("#pagina-principal");
-const paginaVazia     = document.querySelector("#pagina-vazia");
+const paginaSobre     = document.querySelector("#pagina-sobre");
 const paginaChat      = document.querySelector("#pagina-chat");
 const paginaJogo      = document.querySelector("#pagina-jogo");
+const paginaLoja      = document.querySelector("#pagina-loja");
 
 criarPaginaPrincipal(paginaPrincipal);
-criarPaginaSobre(paginaVazia);
+criarPaginaSobre(paginaSobre);
 criarPaginaChat(paginaChat);
-const jogo = criarPaginaSelecaoJogo(paginaJogo); 
-
-const tabs = {
-  principal: document.querySelector("#tab-principal"),
-  vazia:     document.querySelector("#tab-vazia"),
-  chat:      document.querySelector("#tab-chat"),
-  jogo:      document.querySelector("#tab-jogo"),
-};
+const jogo = criarPaginaSelecaoJogo(paginaJogo);
+criarPaginaLoja(paginaLoja);
 
 const paginas = {
-  principal: { el: paginaPrincipal, display: "flex" },
-  vazia:     { el: paginaVazia,     display: "block" },
-  chat:      { el: paginaChat,      display: "block" },
-  jogo:      { el: paginaJogo,      display: "block" },
+  principal: { el: paginaPrincipal },
+  sobre:     { el: paginaSobre },
+  chat:      { el: paginaChat },
+  jogo:      { el: paginaJogo },
+  loja:      { el: paginaLoja },
 };
 
+let paginaAtual = "principal";
+
 function trocarPagina(pagina) {
-  Object.entries(tabs).forEach(([key, btn]) =>
-    btn.setAttribute("aria-selected", String(key === pagina))
+  if (pagina === paginaAtual) return;
+
+  const anterior = paginas[paginaAtual].el;
+  const proxima  = paginas[pagina].el;
+
+  anterior.classList.remove("page--active");
+  anterior.classList.add("page--exit");
+  setTimeout(() => anterior.classList.remove("page--exit"), 250);
+
+  proxima.classList.add("page--active");
+
+  document.querySelectorAll(".nav-item").forEach((btn) =>
+    btn.classList.toggle("nav-item--active", btn.dataset.tab === pagina)
   );
 
-  Object.entries(paginas).forEach(([key, { el, display }]) => {
-    el.style.display = key === pagina ? display : "none";
-  });
+  if (pagina !== "jogo") jogo.pauseGame();
 
   if (pagina === "jogo") {
-    requestAnimationFrame(() => {
-      jogo.resizeCanvas();
-    });
-  } else {
-    jogo.pauseGame();
+    requestAnimationFrame(() => jogo.resizeCanvas());
   }
 
   if (pagina === "principal") {
     criarPaginaPrincipal(paginaPrincipal);
   }
+
+  paginaAtual = pagina;
 }
 
-Object.entries(tabs).forEach(([key, btn]) =>
-  btn.addEventListener("click", () => trocarPagina(key))
+document.querySelectorAll(".nav-item").forEach((btn) =>
+  btn.addEventListener("click", () => trocarPagina(btn.dataset.tab))
 );
