@@ -37,9 +37,9 @@ export function criarPaginaSelecaoJogo(container) {
 
           <button class="game-card-btn" id="btn-cozinheiro">
             <div class="game-card-btn__icon">
-              <span style="font-size:52px; line-height:1; display:block;">👨‍🍳</span>
+             <img src="../img/momocozinheiro.png" alt="Chef Momo" />
             </div>
-            <div class="game-card-btn__name">Momo Chef</div>
+            <div class="game-card-btn__name">Chef Momo</div>
             <div class="game-card-btn__desc">
               Siga as receitas na ordem certa e marque pontos!
             </div>
@@ -47,7 +47,7 @@ export function criarPaginaSelecaoJogo(container) {
 
           <button class="game-card-btn" id="btn-desenho">
             <div class="game-card-btn__icon">
-              <span style="font-size:52px; line-height:1; display:block;">🎨</span>
+                <img src="../img/momopintor.png" alt="Art Momo" />
             </div>
             <div class="game-card-btn__name">Estúdio Momo</div>
             <div class="game-card-btn__desc">
