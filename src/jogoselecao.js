@@ -1,5 +1,6 @@
 import { criarPaginaJogo }         from "./games/jogoFlap.js";
 import { criarPaginaInfiniteJogo } from "../src/games/JogoInifinite.js";
+import { criarPaginaDesenho }      from "./games/jogoDesenho.js";
 
 export function criarPaginaSelecaoJogo(container) {
   let jogoAtivo = null;
@@ -32,12 +33,23 @@ export function criarPaginaSelecaoJogo(container) {
               Corra infinitamente desviando de obstáculos!
             </div>
           </button>
+
+          <button class="game-card-btn" id="btn-desenho">
+            <div class="game-card-btn__icon">
+              <span style="font-size:52px; line-height:1; display:block;">🎨</span>
+            </div>
+            <div class="game-card-btn__name">Estúdio Momo</div>
+            <div class="game-card-btn__desc">
+              Desenhe livremente com pincéis, cores e muito mais!
+            </div>
+          </button>
         </div>
       </div>
     `;
 
-    container.querySelector("#btn-flap").addEventListener("click", () => abrirJogo("flap"));
+    container.querySelector("#btn-flap").addEventListener("click",    () => abrirJogo("flap"));
     container.querySelector("#btn-infinite").addEventListener("click", () => abrirJogo("infinite"));
+    container.querySelector("#btn-desenho").addEventListener("click",  () => abrirJogo("desenho"));
   }
 
   function abrirJogo(tipo) {
@@ -52,8 +64,10 @@ export function criarPaginaSelecaoJogo(container) {
 
     if (tipo === "flap") {
       jogoAtivo = criarPaginaJogo(inner);
-    } else {
+    } else if (tipo === "infinite") {
       jogoAtivo = criarPaginaInfiniteJogo(inner);
+    } else if (tipo === "desenho") {
+      jogoAtivo = criarPaginaDesenho(inner);
     }
 
     requestAnimationFrame(() => {
@@ -62,6 +76,7 @@ export function criarPaginaSelecaoJogo(container) {
     });
 
     container.querySelector("#btn-voltar").addEventListener("click", () => {
+      jogoAtivo?.destroy?.();
       mostrarSelecao();
     });
   }
