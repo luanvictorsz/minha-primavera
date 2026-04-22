@@ -1,6 +1,7 @@
 import { criarPaginaJogo }         from "./games/jogoFlap.js";
 import { criarPaginaInfiniteJogo } from "../src/games/JogoInifinite.js";
 import { criarPaginaDesenho }      from "./games/jogoDesenho.js";
+import { criarPaginaCozinheiro }   from "./games/jogoCozinheiro.js";
 
 export function criarPaginaSelecaoJogo(container) {
   let jogoAtivo = null;
@@ -34,6 +35,16 @@ export function criarPaginaSelecaoJogo(container) {
             </div>
           </button>
 
+          <button class="game-card-btn" id="btn-cozinheiro">
+            <div class="game-card-btn__icon">
+              <span style="font-size:52px; line-height:1; display:block;">👨‍🍳</span>
+            </div>
+            <div class="game-card-btn__name">Momo Chef</div>
+            <div class="game-card-btn__desc">
+              Siga as receitas na ordem certa e marque pontos!
+            </div>
+          </button>
+
           <button class="game-card-btn" id="btn-desenho">
             <div class="game-card-btn__icon">
               <span style="font-size:52px; line-height:1; display:block;">🎨</span>
@@ -47,9 +58,10 @@ export function criarPaginaSelecaoJogo(container) {
       </div>
     `;
 
-    container.querySelector("#btn-flap").addEventListener("click",    () => abrirJogo("flap"));
-    container.querySelector("#btn-infinite").addEventListener("click", () => abrirJogo("infinite"));
-    container.querySelector("#btn-desenho").addEventListener("click",  () => abrirJogo("desenho"));
+    container.querySelector("#btn-flap").addEventListener("click",       () => abrirJogo("flap"));
+    container.querySelector("#btn-infinite").addEventListener("click",   () => abrirJogo("infinite"));
+    container.querySelector("#btn-cozinheiro").addEventListener("click", () => abrirJogo("cozinheiro"));
+    container.querySelector("#btn-desenho").addEventListener("click",    () => abrirJogo("desenho"));
   }
 
   function abrirJogo(tipo) {
@@ -66,13 +78,14 @@ export function criarPaginaSelecaoJogo(container) {
       jogoAtivo = criarPaginaJogo(inner);
     } else if (tipo === "infinite") {
       jogoAtivo = criarPaginaInfiniteJogo(inner);
+    } else if (tipo === "cozinheiro") {
+      jogoAtivo = criarPaginaCozinheiro(inner);
     } else if (tipo === "desenho") {
       jogoAtivo = criarPaginaDesenho(inner);
     }
 
     requestAnimationFrame(() => {
       jogoAtivo?.resizeCanvas?.();
-      jogoAtivo?.resetGame?.();
     });
 
     container.querySelector("#btn-voltar").addEventListener("click", () => {
