@@ -1,7 +1,7 @@
 import { criarPaginaJogo }         from "./games/jogoFlap.js";
 import { criarPaginaInfiniteJogo } from "../src/games/JogoInifinite.js";
-import { criarPaginaDesenho }      from "./games/jogoDesenho.js";
-import { criarPaginaCozinheiro }   from "./games/jogoCozinheiro.js";
+import { criarPaginaDesenho }      from "./games/JogoDesenho.js";
+import { criarPaginaCozinheiro }   from "./games/JogoCozinheiro.js";
 
 export function criarPaginaSelecaoJogo(container) {
   let jogoAtivo = null;
