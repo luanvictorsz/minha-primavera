@@ -99,6 +99,6 @@ export function criarPaginaSelecaoJogo(container) {
   function pauseGame()    { jogoAtivo?.pauseGame?.();    }
 
   mostrarSelecao();
-
+ 
   return { resizeCanvas, resetGame, pauseGame };
 }
