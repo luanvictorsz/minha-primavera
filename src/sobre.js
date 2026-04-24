@@ -54,7 +54,8 @@ export function criarPaginaSobre(container) {
       <div class="sobre-card sobre-card--love">
         <span class="sobre-love-emoji">🦇</span>
         <p class="sobre-love-text">Misa, o Victor te ama muito.</p>
-      </div>
+        <p><a href="https://vm-lover.vercel.app/">clique aqui</a><p/>
+        </div>
 
     </div>
   `;

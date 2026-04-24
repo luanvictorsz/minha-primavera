@@ -70,6 +70,12 @@ button:active { transform: scale(.96); }
     var(--bg);
 }
 
+.timer-love{
+  text-decoration: none;
+  color: #fff;
+}
+
+
 .page-container {
   flex: 1;
   position: relative;
@@ -230,6 +236,7 @@ button:active { transform: scale(.96); }
 }
 .btn-loja-flutuante:hover  { background: rgba(255,85,119,.24); border-color: var(--accent2); }
 .btn-loja-flutuante:active { transform: scale(.93); }
+
 
 /* ─── Heart Animation ────────────────────────────── */
 .heart-img {
